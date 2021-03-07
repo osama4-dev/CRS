@@ -1,14 +1,13 @@
 .company__dashboard{
-    border: 3px solid green;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    padding-top: 10px;
+    padding-top: 30px;
 
     
 }
-.company__container{
+.company__containera{
     width: 600px;
     height: 400px;
 }

@@ -7,6 +7,7 @@ import login from './login/login'
 import companySignUp from './companySignUp/compnaySignUp'
 // import studentDashboard from './dashboard/studentDashboard/studentDashboard'
 import companyDashboard from './dashboard/CompanyDashboard/companyDashboard'
+import studentDashboard from './dashboard/StudentDashboard/studentDashboard'
 
 function App() {
   const [user,setUser] = useState('');
@@ -20,6 +21,8 @@ function App() {
         <Route path='/studentSignUp' component={studentSignUp} />
         <Route path='/compnaySignUp' component={companySignUp} />
         <Route path='/companyDashboard' component={companyDashboard} />
+        <Route path='/studentDashboard' component={studentDashboard} />
+
       </Switch>
     </div>
   );

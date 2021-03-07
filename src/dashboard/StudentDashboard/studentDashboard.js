@@ -1,27 +1,26 @@
 import React from 'react'
-import StudentContainer from '../../Containers/StudentContainer/StudentContainer'
-import {Student_Data} from '../../Data/student.data'
+import StudentContainer from '../../Containers/studentContainer/studentContainer'
+import {Student_Data} from '../../Data/Student.data'
 import './studentDashboard.css'
 
 
 function StudentDashboard(props) {
     return (
-        // <div className="student__dashboard">
-        //     {Company_Data.map((student)=>
-        //     (
-        //         <div className="student__container">
-        //         <StudentContainer
-        //         key={student.id}
-        //         image={student.image}
-        //         name={student.name}
-        //         description={student.description}
-
-        //         />
-        //         </div>
-        //     ))}
+        <div className="student__dashboard">
+        {Student_Data.map((student)=>
+        (
+            <div className="student__containera"  key={student.id}>
+            <StudentContainer
+            image={student.image}
+            name={student.name}
+            description={student.description}
+            button="View Profile"
+            />
             
-        // </div>
-        <></>
+            </div>
+        ))}
+        
+    </div>
     )
 }
 
