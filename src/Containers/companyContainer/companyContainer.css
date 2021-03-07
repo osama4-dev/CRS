@@ -1,0 +1,18 @@
+.company__container{
+    display: flex;
+    border: 3px solid red;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.img__container{
+    width: 100%;
+    border: 2px solid blue;
+    border-radius: 50%;
+    
+}
+.img_height {
+    width: 150px;
+    height: 160px;
+}

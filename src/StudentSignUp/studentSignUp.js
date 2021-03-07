@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Container,
   CssBaseline,
-  Avatar,
   Typography,
   Button,
   Grid,
@@ -11,7 +10,6 @@ import {
   Card,
   CardContent,
 } from "@material-ui/core";
-// import {LockRounded} from '@material-ui/icons';
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import fire from "../firebase/db";
 import { ToastContainer, toast } from "react-toastify";
@@ -22,7 +20,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import "./studentSignUp.css";
 
-const StudentSignUp = (props) => {
+  const StudentSignUp = (props) => {
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
