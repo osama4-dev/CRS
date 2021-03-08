@@ -8,7 +8,7 @@ const StudentContainer = (props) => {
 
   return (
     <div className="student__container">
-    <div className="img_height">
+    <div className="img_heights">
       <img className="img__container" src={props.image} alt="abc" />
     </div>
 
