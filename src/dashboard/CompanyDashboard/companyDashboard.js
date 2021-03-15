@@ -5,7 +5,7 @@ import './companyDashboard.css'
 import button from '../../components/button'
 
 function CompanyDashboard(props) {
-    const [FullName,setFullName]= useState('');
+    // const [FullName,setFullName]= useState('');
 
     return (
         <div className="company__dashboard">

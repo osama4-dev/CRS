@@ -125,7 +125,7 @@ const Header = props => {
               </Button>
               <Button className="MuiButton-root "
                 variant="contained"
-                onClick={() => handleButtonClick("/compnaySignUp")}
+                onClick={() => handleButtonClick("/CompanySignUp")}
               >
                 Company Sign Up
                 

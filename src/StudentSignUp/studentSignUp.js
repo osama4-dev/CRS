@@ -4,15 +4,16 @@ import {
   CssBaseline,
   Typography,
   Button,
-  Grid,
-  Link,
   makeStyles,
   Card,
   CardContent,
 } from "@material-ui/core";
+
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import AuthMiddleWare from "../redux/authMiddleWare";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import fire from "../firebase/db";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ScaleLoader } from "react-spinners";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -20,14 +21,13 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import "./studentSignUp.css";
 
-  const StudentSignUp = (props) => {
+const StudentSignUp = (props) => {
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [program, setProgram] = useState("");
-  const [loading, setLoading] = useState(false);
   const [gender, setGender] = useState("");
 
   const override = `
@@ -35,6 +35,8 @@ import "./studentSignUp.css";
     margin-left: 0px;
     border-color: red;
 `;
+console.log("props",props)
+
   const handleGender = (event) => {
     setGender(event.target.value);
   };
@@ -53,37 +55,20 @@ import "./studentSignUp.css";
   const handleConfirmPassowerd = (event) => {
     setConfirmPassword(event.target.value);
   };
-  const handleSignUp = () => {
-    setLoading(true);
-    fire
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
+  const handleSignUp = (event) => {
+    event.preventDefault();
 
-      .then((response) => {
-        if (response) {
-          props.history.push("/");
-          toast.success("User Registered Successfully");
-        }
-      })
-      .catch((error) => {
-            toast.error(error.message);
-            setLoading(false);
-
-        // switch (error.code) {
-        //   case "auth/email-already-in-use":
-        //     toast.error(error.message);
-        //     break;
-        //   case "auth/invalid-email":
-        //     toast.error(error.message);
-        //     break;
-        //   case "auth/weak-password":
-        //     toast.error(error.message);
-        //     break;
-        //   default:
-        //     return <h1>No project match</h1>;
-        // }
-      });
+    props.SignUpDispatch({
+      email: email,
+      password: password,
+    });
   };
+
+  useEffect(() => {
+    if (props.authReducer.isSucess) {
+      props.history.push("/");
+    }
+  }, [props.authReducer, props.history]);
 
   useEffect(() => {
     ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
@@ -103,9 +88,6 @@ import "./studentSignUp.css";
           <ToastContainer />
           <CssBaseline />
           <div className={classes.paper}>
-            {/* <Avatar className={classes.avatar}>
-                            <LockRounded/>
-                        </Avatar> */}
             <Typography component="h1" variant="h5">
               Student Sign Up
             </Typography>
@@ -194,12 +176,12 @@ import "./studentSignUp.css";
                 value={confirmPassword}
                 autoComplete="off"
               />
-              {loading ? (
+              {props.authReducer.isLoading ? (
                 <ScaleLoader
                   css={override}
                   size={150}
                   color={"#eb4034"}
-                  loading={loading}
+                  loading={props.authReducer.isLoading}
                 />
               ) : (
                 <Button
@@ -211,17 +193,6 @@ import "./studentSignUp.css";
                   Sign Up
                 </Button>
               )}
-              <Grid container>
-                <Grid item>
-                  <Link
-                    onClick={props.toggle}
-                    className={classes.pointer}
-                    variant="body2"
-                  >
-                    
-                  </Link>
-                </Grid>
-              </Grid>
             </ValidatorForm>
           </div>
         </CardContent>
@@ -242,7 +213,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: "100%",
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -261,4 +232,18 @@ const useStyles = makeStyles((theme) => ({
     color: "red",
   },
 }));
-export default StudentSignUp;
+
+function mapDispatchToProps(dispatch) {
+  return {
+    SignUpDispatch: (data) => dispatch(AuthMiddleWare.signUp(data)),
+  };
+}
+function mapStateToProps(state) {
+  return {
+    authReducer: state.authReducer,
+  };
+}
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(StudentSignUp));
