@@ -1,4 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState,useEffect } from "react";
+// import { connect } from "react-redux";
+// import AuthMiddleWare from "../redux/authMiddleWare";
+// import { withRouter } from "react-router-dom";
+import { auth, firestore } from "../../firebase/db";
+
 import {
   Container,
   CssBaseline,
@@ -9,66 +14,81 @@ import {
   CardContent,
 } from "@material-ui/core";
 
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import AuthMiddleWare from "../redux/authMiddleWare";
+// import {LockRounded} from '@material-ui/icons';
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ScaleLoader } from "react-spinners";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import "./studentSignUp.css";
 
-const StudentSignUp = (props) => {
+function AdminSignUp  (props) {
   const classes = useStyles();
+  const [fullName, setFullName] = useState("");
+
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
-  const [program, setProgram] = useState("");
-  const [gender, setGender] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const override = `
     display: block;
     margin-left: 0px;
     border-color: red;
 `;
-console.log("props",props)
-
-  const handleGender = (event) => {
-    setGender(event.target.value);
+  const handleFullName = (event) => {
+    setFullName(event.target.value);
   };
+ 
   const handleEmail = (event) => {
     setEmail(event.target.value);
-  };
-  const handleProgram = (event) => {
-    setProgram(event.target.value);
   };
   const handlePassword = (event) => {
     setPassword(event.target.value);
   };
-  const handleName = (event) => {
-    setName(event.target.value);
-  };
   const handleConfirmPassowerd = (event) => {
     setConfirmPassword(event.target.value);
   };
-  const handleSignUp = (event) => {
-    event.preventDefault();
 
-    props.SignUpDispatch({
-      email: email,
-      password: password,
-    });
+  const handleSignUp = async (event) => {
+    
+
+    event.preventDefault();
+    try {
+      setLoading(true);
+       
+      const res = await auth.createUserWithEmailAndPassword(email, password);
+      firestore.collection("admin").doc(res.user.uid).set({
+        fullName,
+        email,
+      
+        // companyName,
+        // industry,
+        // email,
+        
+        role: "admin",
+        uid: res.user.uid,
+      });
+      setLoading(false);
+  
+      props.history.push("/");
+    } catch (error) {
+      setLoading(false)
+      toast.error(error.message);
+    }
+    // props.SignUpDispatch({
+    //   email: email,
+    //   password: password,
+    // });
+    // setLoading(false);
+
   };
 
-  useEffect(() => {
-    if (props.authReducer.isSucess) {
-      props.history.push("/");
-    }
-  }, [props.authReducer, props.history]);
+  // useEffect(() => {
+  //   if (props.authReducer.isSucess) {
+  //     props.history.push("/");
+  //     props.ResetDispatch();
+  //   }
+  // }, [props.authReducer.isSucess, props.history]);
 
   useEffect(() => {
     ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
@@ -88,55 +108,24 @@ console.log("props",props)
           <ToastContainer />
           <CssBaseline />
           <div className={classes.paper}>
+            
             <Typography component="h1" variant="h5">
-              Student Sign Up
+              Admin Sign Up
             </Typography>
             <ValidatorForm onSubmit={handleSignUp} className={classes.form}>
               <TextValidator
                 variant="outlined"
                 margin="normal"
                 fullWidth
-                label="Name"
-                onChange={handleName}
-                name="Name"
-                value={name}
+                label="Full Name"
+                onChange={handleFullName}
+                name="Full Name"
+                value={fullName}
                 validators={["required"]}
-                errorMessages={["this field is required", "Name is not valid"]}
+                errorMessages={["this field is required", "name is not valid"]}
                 autoComplete="off"
               />
-              <InputLabel id="demo-simple-select-label">
-                Select Your Gender
-              </InputLabel>
-              <Select
-                className="dropMeDown"
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={gender}
-                onChange={handleGender}
-                validators={["required"]}
-                errorMessages={["this field is required"]}
-              >
-                <MenuItem value={10}>Male</MenuItem>
-                <MenuItem value={20}>Female</MenuItem>
-                <MenuItem value={30}>Others</MenuItem>
-              </Select>
-
-              <TextValidator
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                label="Program"
-                onChange={handleProgram}
-                name="Program"
-                value={program}
-                validators={["required"]}
-                errorMessages={[
-                  "this field is required",
-                  "Program is not valid",
-                ]}
-                autoComplete="off"
-              />
-
+              
               <TextValidator
                 variant="outlined"
                 margin="normal"
@@ -149,8 +138,8 @@ console.log("props",props)
                 errorMessages={["this field is required", "email is not valid"]}
                 autoComplete="off"
               />
-              <br />
 
+              <br />
               <TextValidator
                 variant="outlined"
                 fullWidth
@@ -176,12 +165,12 @@ console.log("props",props)
                 value={confirmPassword}
                 autoComplete="off"
               />
-              {props.authReducer.isLoading ? (
+              {loading ? (
                 <ScaleLoader
                   css={override}
                   size={150}
                   color={"#eb4034"}
-                  loading={props.authReducer.isLoading}
+                  loading={loading}
                 />
               ) : (
                 <Button
@@ -213,7 +202,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%",
+    width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -233,17 +222,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function mapDispatchToProps(dispatch) {
-  return {
-    SignUpDispatch: (data) => dispatch(AuthMiddleWare.signUp(data)),
-  };
-}
-function mapStateToProps(state) {
-  return {
-    authReducer: state.authReducer,
-  };
-}
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withRouter(StudentSignUp));
+// function mapDispatchToProps(dispatch) {
+//   return {
+//     SignUpDispatch: (data) => dispatch(AuthMiddleWare.signUp(data)),
+//     ResetDispatch: () => dispatch(AuthMiddleWare.reset()),
+//   };
+// }
+// function mapStateToProps(state) {
+//   return {
+//     authReducer: state.authReducer,
+//   };
+// }
+
+export default AdminSignUp ;

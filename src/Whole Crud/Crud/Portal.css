@@ -1,0 +1,35 @@
+.container h2 {
+  text-align: center;
+  margin: 25px auto;
+}
+
+.list {
+  text-align: left;
+  max-width: 750px;
+  margin: auto;
+}
+ul{
+  list-style: none;
+  
+}
+.submit-form {
+  max-width: 300px;
+  margin: auto;
+  margin-top: 100px;
+  
+}
+
+.edit-form {
+  max-width: 300px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.MuiTypography-h5 {
+  color: dodgerblue  !important;
+  font-size: 2.2rem  !important;
+  text-align: center !important;
+}

@@ -8,6 +8,11 @@ import MenuIcon from "@material-ui/icons/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import Button from "@material-ui/core/Button";
+// import InputLabel from "@material-ui/core/InputLabel";
+// import Select from "@material-ui/core/InputLabel";
+
+
+
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { withRouter } from "react-router-dom";
 import './navbar.css'
@@ -116,6 +121,11 @@ const Header = props => {
             </>
           ) : (
             <div className={classes.headerOptions}>
+
+
+
+
+
               <Button className="MuiButton-root "
                 variant="contained"
                 onClick={() => handleButtonClick("/studentSignUp")}
@@ -135,6 +145,26 @@ const Header = props => {
                 onClick={() => handleButtonClick("/")}
               >
                 Login
+              </Button>
+              <Button className="MuiButton-root "
+                variant="contained"
+                onClick={() => handleButtonClick("/AdminControlsList")}
+              >
+                Admin Portal
+              </Button>
+              <Button className="MuiButton-root "
+                variant="contained"
+                onClick={() => handleButtonClick("/Portal")}
+              >
+                Portal
+              </Button>
+              
+
+              <Button className="MuiButton-root "
+                variant="contained"
+                onClick={() => handleButtonClick("/AdminSignUp")}
+              >
+                Admin SignUp
               </Button>
             </div>
           )}

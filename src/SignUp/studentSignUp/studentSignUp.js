@@ -1,8 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import AuthMiddleWare from "../redux/authMiddleWare";
-import { withRouter } from "react-router-dom";
-
 import {
   Container,
   CssBaseline,
@@ -12,61 +8,82 @@ import {
   Card,
   CardContent,
 } from "@material-ui/core";
+import { auth, firestore } from "../../firebase/db";
 
-// import {LockRounded} from '@material-ui/icons';
+// import { withRouter } from "react-router-dom";
+// import { connect } from "react-redux";
+// import AuthMiddleWare from "../redux/authMiddleWare";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ScaleLoader } from "react-spinners";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import "./studentSignUp.css";
 
-const CompanySignUp = (props) => {
+const StudentSignUp = (props) => {
   const classes = useStyles();
-  const [name, setName] = useState("");
-
+  const [fullName, setFullName] = useState("");
+  const [gender, setGender] = useState("");
+  const [program, setProgram] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState("");
+
 
   const override = `
     display: block;
     margin-left: 0px;
     border-color: red;
 `;
-  console.log("props", props);
-  const handleName = (event) => {
-    setName(event.target.value);
+// console.log("props",props)
+
+  const handleGender = (event) => {
+    setGender(event.target.value);
   };
   const handleEmail = (event) => {
     setEmail(event.target.value);
   };
+  const handleProgram = (event) => {
+    setProgram(event.target.value);
+  };
   const handlePassword = (event) => {
     setPassword(event.target.value);
+  };
+  const handleFullName = (event) => {
+    setFullName(event.target.value);
   };
   const handleConfirmPassowerd = (event) => {
     setConfirmPassword(event.target.value);
   };
-
-  const handleSignUp = (event) => {
-    
-
+  const handleSignUp = async (event) => {
     event.preventDefault();
-
-    setLoading(true);
-    props.SignUpDispatch({
-      email: email,
-      password: password,
-    });
-    setLoading(false);
-
+    try {
+      setLoading(true);
+       
+      const res = await auth.createUserWithEmailAndPassword(email, password);
+      firestore.collection("users").doc(res.user.uid).set({
+        fullName,
+        gender,
+        program,
+        email,
+      
+        
+        role: "Student",
+        uid: res.user.uid,
+      });
+      setLoading(false);
+  
+      props.history.push("/");
+    } catch (error) {
+      setLoading(false)
+      toast.error(error.message);
+    }
+    
   };
 
-  useEffect(() => {
-    if (props.authReducer.isSucess) {
-      props.history.push("/");
-      props.ResetDispatch();
-    }
-  }, [props.authReducer.isSucess, props.history]);
 
   useEffect(() => {
     ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
@@ -86,23 +103,55 @@ const CompanySignUp = (props) => {
           <ToastContainer />
           <CssBaseline />
           <div className={classes.paper}>
-            
             <Typography component="h1" variant="h5">
-              Company Sign Up
+              Student Sign Up
             </Typography>
             <ValidatorForm onSubmit={handleSignUp} className={classes.form}>
               <TextValidator
                 variant="outlined"
                 margin="normal"
                 fullWidth
-                label="Name"
-                onChange={handleName}
+                label="Full Name"
+                onChange={handleFullName}
                 name="Name"
-                value={name}
+                value={fullName}
                 validators={["required"]}
-                errorMessages={["this field is required", "name is not valid"]}
+                errorMessages={["this field is required", "Name is not valid"]}
                 autoComplete="off"
               />
+              <InputLabel id="demo-simple-select-label">
+                Select Your Gender
+              </InputLabel>
+              <Select
+                className="dropMeDown"
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={gender}
+                onChange={handleGender}
+                validators={["required"]}
+                errorMessages={["this field is required"]}
+              >
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+                <MenuItem value="Others">Others</MenuItem>
+              </Select>
+
+              <TextValidator
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                label="Program"
+                onChange={handleProgram}
+                name="Program"
+                value={program}
+                validators={["required"]}
+                errorMessages={[
+                  "this field is required",
+                  "Program is not valid",
+                ]}
+                autoComplete="off"
+              />
+
               <TextValidator
                 variant="outlined"
                 margin="normal"
@@ -115,8 +164,8 @@ const CompanySignUp = (props) => {
                 errorMessages={["this field is required", "email is not valid"]}
                 autoComplete="off"
               />
-
               <br />
+
               <TextValidator
                 variant="outlined"
                 fullWidth
@@ -179,7 +228,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: "100%",
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -199,19 +248,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function mapDispatchToProps(dispatch) {
-  return {
-    SignUpDispatch: (data) => dispatch(AuthMiddleWare.signUp(data)),
-    ResetDispatch: () => dispatch(AuthMiddleWare.reset()),
-  };
-}
-function mapStateToProps(state) {
-  return {
-    authReducer: state.authReducer,
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withRouter(CompanySignUp));
+// function mapDispatchToProps(dispatch) {
+//   return {
+//     SignUpDispatch: (data) => dispatch(AuthMiddleWare.signUp(data)),
+//   };
+// }
+// function mapStateToProps(state) {
+//   return {
+//     authReducer: state.authReducer,
+//   };
+// }
+export default StudentSignUp;

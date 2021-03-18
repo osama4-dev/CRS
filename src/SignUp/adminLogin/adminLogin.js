@@ -12,7 +12,7 @@ import {
   Card,
   CardContent,
 } from "@material-ui/core";
-import { auth, firestore } from "../firebase/db";
+import { auth, firestore } from "../../firebase/db";
 
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { ToastContainer,toast } from "react-toastify";
@@ -24,7 +24,7 @@ const Login = (props) => {
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [rememberme, setRememberMe] = useState(false);
+  const [rememberme, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const override = `
     display: block;
@@ -40,9 +40,9 @@ const Login = (props) => {
   const handlePassword = (event) => {
     setPassword(event.target.value);
   };
-  // const handleCheck = (event) => {
-  //   setRememberMe(event.target.checked);
-  // };
+  const handleCheck = (event) => {
+    setRememberMe(event.target.checked);
+  };
   const handlerLogin = async (event) => {
     event.preventDefault();
     try {
@@ -53,24 +53,24 @@ const Login = (props) => {
 
         const uid = res.user.uid;
         const student = await firestore
-          .collection("users")
-          .doc(uid)
-          .get();
-        const admin = await firestore
           .collection("admin")
           .doc(uid)
           .get();
-          console.log("data",res)
+        // const company = await firestore
+        //   .collection("users")
+        //   .doc(uid)
+        //   .get();
+        //   console.log("data",res)
 
         setLoading(true);
 
-        if (student.exists) {
+        // if (student.exists) {
           
-          props.history.push("/Portal");
-        } else if (admin.exists) {
           props.history.push("/AdminControlsList");
-        } else {
-        }
+        // } else if (company.exists) {
+        //   props.history.push("/add");
+        // } else {
+        // }
       }
     } catch (error) {
       setLoading(false);
@@ -89,7 +89,7 @@ const Login = (props) => {
           <CssBaseline />
           <div className={classes.paper}>
             <Typography component="h1" variant="h5">
-              Log In
+             Admin Portal
             </Typography>
             <ValidatorForm
               onSubmit={handlerLogin}
@@ -124,7 +124,7 @@ const Login = (props) => {
                 errorMessages={["this field is required"]}
                 autoComplete="off"
               />
-              {/* <FormControlLabel
+              <FormControlLabel
                 control={
                   <Checkbox
                     value={rememberme}
@@ -133,7 +133,7 @@ const Login = (props) => {
                   />
                 }
                 label="Remember me"
-              /> */}
+              />
               {loading ? (
                 <ScaleLoader
                   css={override}

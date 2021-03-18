@@ -1,11 +1,15 @@
 import { useState } from "react";
 import "./App.css";
 import Navbar from "./navbar/navbar";
-import { BrowserRouter, withRouter } from "react-router-dom";
+// import { BrowserRouter, withRouter } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
 
 import Routes from "./Route/PublicRoute/Routes";
 
-function App() {
+const App = () => {
+  // const dispatch = useDispatch();
+  // const currentType = useSelector((state) => state.authReducer.currnetuser?.uid);
+
   // const [Loading, setLoading] = useState(true);
 
 
@@ -16,10 +20,9 @@ function App() {
 
   return (
     <div className="App">
-      <BrowserRouter>
         <Navbar />
         <Routes />
-      </BrowserRouter>
+        
     </div>
   );
 }
